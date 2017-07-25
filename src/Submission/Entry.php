@@ -9,15 +9,29 @@
  * file that was distributed with this source code.
  */
 use Qualia\Client;
+use Qualia\Util;
 
 class Entry
 {
+    /**
+     * @var array
+     */
+    protected $additional;
+    /**
+     * @var array
+     */
+    private $data;
     /**
      * @var \Qualia\Client
      */
     private $client;
 
+
     private function __construct(Client $client) {
+        $this->data         = array();
+        $this->additional   = array(
+            'mark_complete' => 0,
+        );
         $this->client = $client;
     }
 
@@ -25,11 +39,11 @@ class Entry
      * Build a configuration
      *
      * @param \Qualia\Client $client
-     * @return \Qualia\Qualia
+     * @return \Qualia\Submission\Entry
      */
     public static function build(Client $client)
     {
-        return (new Qualia($client));
+        return (new Entry($client));
     }
 
     /**
@@ -42,7 +56,7 @@ class Entry
      */
     public function uniqueId($identifier)
     {
-        $this->data['unique_id'] = $identifier;
+        $this->additional['unique_id'] = $identifier;
 
         return $this;
     }
@@ -57,10 +71,10 @@ class Entry
      */
     public function name($id, $firstName = null, $lastName = null) {
 
-        $this->data[$id] = [
+        $this->data[$id] = array(
             'first_name' => $firstName,
-            'last_name'  => $lastName
-        ];
+            'last_name'  => $lastName,
+        );
 
         return $this;
     }
@@ -112,14 +126,30 @@ class Entry
     }
 
     /**
-     * Once we have everything added, we can submit
+     * Once we have everything added, we can submit.
      *
-     * @param string $url
-     * @param array $data
+     * @param bool $markComplete   If you would like submit the survey and mark it as completed,please set this field to true,
+     *                             otherwise, survey will not be marked as completed and an email will be sent to the user
+     *                             asking to complete the rest of the survey.
+     *
+     *                             Depending on survey distribution channels this may vary:
+     *                             Institution may have an Enrollment form enabled where it collects some data on site,
+     *                             some through this API, some maybe shared in social media. If that's the case, must likely
+     *                             you do not need to mark it as completed.
+     *
+     *                             However,
+     *                             If all responses are collected via this API and second survey is send later, you may
+     *                             need to mark it as completed.
+     * @return array
+     * @throws \Qualia\Exceptions\RequestException
      */
-    public function post($url, $data)
+    public function send($markComplete = false)
     {
-        $this->client->post($url, $data);
+        if ($markComplete) {
+            $this->additional['mark_complete'] = 1;
+        }
+
+        return $this->client->post('survey/'. $this->client->getSurveyId() .'/entries', $this->data, $this->additional);
     }
 
 }

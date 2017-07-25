@@ -51,6 +51,10 @@ $questions = \Qualia\Configuration\Questions::get($client);
 var_dump($questions);
 /*
     [
+        "surveys": [
+            [ "name": "Enrollment Survey","key": "enrollment"],
+            [ "name": "Initial Survey","key": "initial_survey"], 
+        ],
         [
             key: "QUESTION_ID",
             name: "Question Name"

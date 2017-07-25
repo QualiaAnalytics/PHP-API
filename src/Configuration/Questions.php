@@ -12,6 +12,7 @@ class Questions
      */
     public static function get(Client $client)
     {
-        return $client->get('/surveys/' . $client->getSurveyId() . '/fields');
+
+        return $client->get('surveys/' . $client->getSurveyId() . '/fields');
     }
 }
