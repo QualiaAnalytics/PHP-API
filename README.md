@@ -12,7 +12,7 @@ PHP wrapper to interact with Qualia Analytics API
 ### Installing
 
 ```
-composer require qualia-analytics/php-api
+composer require qualiaanalytics/php-api
 ```
 
 ### Usage

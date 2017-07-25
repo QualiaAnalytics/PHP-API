@@ -1,0 +1,44 @@
+language: php
+sudo: false
+
+php:
+  - 5.3
+  - 5.4
+  - 5.5
+  - 5.6
+  - 7.0
+  - 7.1
+env:
+  global:
+    - setup=basic
+
+matrix:
+  fast_finish: true
+  include:
+    - php: 5.6
+      env: setup=lowest
+    - php: 5.6
+      env: setup=stable
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+before_install:
+  - if [[ $TRAVIS_PHP_VERSION != 7.1 ]] ; then phpenv config-rm xdebug.ini; fi
+  - travis_retry composer self-update
+
+install:
+  - if [[ $setup = 'basic' ]]; then travis_retry composer install --no-interaction --prefer-dist --no-suggest; fi
+  - if [[ $setup = 'stable' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-stable --no-suggest; fi
+  - if [[ $setup = 'lowest' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-lowest --prefer-stable --no-suggest; fi
+
+script: vendor/bin/phpunit
+
+after_script:
+  - if [ $(phpenv version-name) = "5.3" ] && [ "$REMOVE_XDEBUG" = "0" ]; then php ocular.phar code-coverage:upload --format=php-clover test/clover.xml --revision=$TRAVIS_COMMIT; fi
+  - if [ $(phpenv version-name) = "5.4" ] && [ "$REMOVE_XDEBUG" = "0" ]; then php ocular.phar code-coverage:upload --format=php-clover test/clover.xml --revision=$TRAVIS_COMMIT; fi
+  - if [ $(phpenv version-name) = "5.5" ] && [ "$REMOVE_XDEBUG" = "0" ]; then php ocular.phar code-coverage:upload --format=php-clover test/clover.xml --revision=$TRAVIS_COMMIT; fi
+  - if [ $(phpenv version-name) = "5.6" ] && [ "$REMOVE_XDEBUG" = "0" ]; then php ocular.phar code-coverage:upload --format=php-clover test/clover.xml --revision=$TRAVIS_COMMIT; fi
+  - if [ $(phpenv version-name) = "7.0" ] && [ "$REMOVE_XDEBUG" = "0" ]; then php ocular.phar code-coverage:upload --format=php-clover test/clover.xml --revision=$TRAVIS_COMMIT; fi
+  - if [ $(phpenv version-name) = "7.1" ] && [ "$REMOVE_XDEBUG" = "0" ]; then php ocular.phar code-coverage:upload --format=php-clover test/clover.xml --revision=$TRAVIS_COMMIT; fi
