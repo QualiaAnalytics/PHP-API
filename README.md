@@ -1,6 +1,8 @@
 
 <p align="center"><img src="https://s3-eu-west-1.amazonaws.com/qa-survey-system/image-upload/PWT62RP7xsUfQpH9.png"></p>
 
+[![Build Status](https://travis-ci.org/QualiaAnalytics/PHP-API.svg?branch=master)](http://travis-ci.org/QualiaAnalytics/PHP-API)
+[![Code Coverage](https://img.shields.io/scrutinizer/coverage/g/QualiaAnalytics/PHP-API/master.svg)](https://scrutinizer-ci.com/g/QualiaAnalytics/PHP-API/)
 ### Qualia Analyics
 PHP wrapper to interact with Qualia Analytics API
 
