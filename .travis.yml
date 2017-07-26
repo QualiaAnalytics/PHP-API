@@ -10,7 +10,6 @@ php:
   - nightly
 env:
   - REMOVE_XDEBUG="0"
-  - REMOVE_XDEBUG="1"
 
 matrix:
   allow_failures:
@@ -19,7 +18,7 @@ matrix:
   fast_finish: true
   include:
     - php: hhvm-3.12
-      env: REMOVE_XDEBUG="0" HHVM="1"
+      env: HHVM="1"
       dist: trusty
 
 cache:
@@ -27,7 +26,6 @@ cache:
     - $HOME/.composer/cache
 
 before_install:
-  - if [ "$REMOVE_XDEBUG" = "1" ]; then phpenv config-rm xdebug.ini; fi
   - travis_retry composer self-update
 
 install: travis_retry composer install --no-interaction --prefer-dist
