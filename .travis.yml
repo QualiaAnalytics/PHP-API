@@ -30,7 +30,7 @@ before_install:
   - if [ "$REMOVE_XDEBUG" = "1" ]; then phpenv config-rm xdebug.ini; fi
   - travis_retry composer self-update
 
-install: travis_retry composer update --no-interaction --prefer-dist
+install: travis_retry composer install --no-interaction --prefer-dist
 
 script: vendor/bin/phpunit
 
