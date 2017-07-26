@@ -9,7 +9,7 @@ class EntryTest extends TestCase
 
     public function testInvalidCredentials()
     {
-        self::setExpectedException("\\Qualia\\Exceptions\\RequestException");
+        self::expectException("\\Qualia\\Exceptions\\RequestException");
 
         Entry::build(new Client('597768e728d8f1508f6d9f62', 'invalid-credentials'))
                      ->email('q_tVabQ3cUlwZTgQ10', 'unit+test@example.com')
@@ -19,12 +19,30 @@ class EntryTest extends TestCase
 
     public function testFailsWithoutData()
     {
-        self::setExpectedException("\\Qualia\\Exceptions\\RequestException");
+        self::expectException("InvalidArgumentException");
+
+        Entry::build($this->client)
+             ->send();
+    }
+
+    public function allowsOnlyCorrectDateNotUnixTime()
+    {
+        self::expectException("InvalidArgumentException");
 
         $id = uniqid('', true);
 
         Entry::build($this->client)
              ->uniqueId($id)
+             ->date('q_1J75WdyBwVpwlJUM', time())
+             ->send();
+    }
+
+    public function allowsOnlyCorrectDate()
+    {
+        self::expectException("InvalidArgumentException");
+
+        Entry::build($this->client)
+             ->date('q_1J75WdyBwVpwlJUM', 'invalid')
              ->send();
     }
 
@@ -41,6 +59,19 @@ class EntryTest extends TestCase
         self::assertArrayHasKey('id', $response);
     }
 
+    public function testSingleCheckbox()
+    {
+        $id = uniqid('', true);
+
+        $response = Entry::build($this->client)
+                         ->email('q_3RYJ4MpggyMFuU50', $id."+test@example.com")
+                         ->response('q_tVabQ3cUlwZTgQ10', 'o_ACvo61cUuKXxD5C1')
+                         ->send();
+
+        self::assertEquals('success', $response['message']);
+        self::assertArrayHasKey('id', $response);
+    }
+
     public function testWithAllFields()
     {
         $id = uniqid('', true);
@@ -50,6 +81,7 @@ class EntryTest extends TestCase
              ->email('q_3RYJ4MpggyMFuU50', $id."+test@example.com")
              ->name('q_KCyzOs7VqevWbEO0', "Unit", "Tester")
              ->date('q_1J75WdyBwVpwlJUM', date('Y-m-d'))
+             ->response('q_KCyzOs7VqevWbEO0', ['o_wCcuY5a54YBeXLC1', 'o_ACvo61cUuKXxD5C1'])
              ->send();
 
         self::assertEquals('success', $response['message']);

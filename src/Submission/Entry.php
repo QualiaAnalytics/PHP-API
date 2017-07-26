@@ -8,6 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use InvalidArgumentException;
 use Qualia\Client;
 use Qualia\Util;
 
@@ -103,7 +104,7 @@ class Entry
     public function date($id, $date)
     {
         if (! Util::isValidDate($date)) {
-            throw new \InvalidArgumentException("Date must be provided in Y-m-d format");
+            throw new InvalidArgumentException("Date must be provided in Y-m-d format");
         }
 
         $this->data[$id] = $date;
