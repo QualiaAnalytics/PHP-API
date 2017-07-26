@@ -9,7 +9,7 @@ class EntryTest extends TestCase
 
     public function testInvalidCredentials()
     {
-        self::expectException("\\Qualia\\Exceptions\\RequestException");
+        self::setExpectedException("\\Qualia\\Exceptions\\RequestException");
 
         Entry::build(new Client('597768e728d8f1508f6d9f62', 'invalid-credentials'))
                      ->email('q_tVabQ3cUlwZTgQ10', 'unit+test@example.com')
@@ -19,7 +19,7 @@ class EntryTest extends TestCase
 
     public function testFailsWithoutData()
     {
-        self::expectException("InvalidArgumentException");
+        self::setExpectedException("InvalidArgumentException");
 
         Entry::build($this->client)
              ->send();
@@ -27,7 +27,7 @@ class EntryTest extends TestCase
 
     public function allowsOnlyCorrectDateNotUnixTime()
     {
-        self::expectException("InvalidArgumentException");
+        self::setExpectedException("InvalidArgumentException");
 
         $id = uniqid('', true);
 
@@ -39,7 +39,7 @@ class EntryTest extends TestCase
 
     public function allowsOnlyCorrectDate()
     {
-        self::expectException("InvalidArgumentException");
+        self::setExpectedException("InvalidArgumentException");
 
         Entry::build($this->client)
              ->date('q_1J75WdyBwVpwlJUM', 'invalid')
