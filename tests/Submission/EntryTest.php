@@ -12,8 +12,8 @@ class EntryTest extends TestCase
         self::setExpectedException("\\Qualia\\Exceptions\\RequestException");
 
         Entry::build(new Client('597768e728d8f1508f6d9f62', 'invalid-credentials'))
-                     ->email('q_tVabQ3cUlwZTgQ10', 'unit+test@example.com')
-                     ->send();
+                        ->email('q_tVabQ3cUlwZTgQ10', 'unit+test@example.com')
+                        ->send();
 
     }
 
@@ -22,7 +22,7 @@ class EntryTest extends TestCase
         self::setExpectedException("InvalidArgumentException");
 
         Entry::build($this->client)
-             ->send();
+                ->send();
     }
 
     public function allowsOnlyCorrectDateNotUnixTime()
@@ -32,9 +32,9 @@ class EntryTest extends TestCase
         $id = uniqid('', true);
 
         Entry::build($this->client)
-             ->uniqueId($id)
-             ->date('q_1J75WdyBwVpwlJUM', time())
-             ->send();
+                ->uniqueId($id)
+                ->date('q_1J75WdyBwVpwlJUM', time())
+                ->send();
     }
 
     public function allowsOnlyCorrectDate()
@@ -42,8 +42,8 @@ class EntryTest extends TestCase
         self::setExpectedException("InvalidArgumentException");
 
         Entry::build($this->client)
-             ->date('q_1J75WdyBwVpwlJUM', 'invalid')
-             ->send();
+                ->date('q_1J75WdyBwVpwlJUM', 'invalid')
+                ->send();
     }
 
     public function testCreatesEntryWithEmail()
@@ -51,9 +51,9 @@ class EntryTest extends TestCase
         $id = uniqid('', true);
 
         $response = Entry::build($this->client)
-             ->uniqueId($id)
-             ->email('q_3RYJ4MpggyMFuU50', $id."+test@example.com")
-             ->send();
+                ->uniqueId($id)
+                ->email('q_3RYJ4MpggyMFuU50', $id."+test@example.com")
+                ->send();
 
         self::assertEquals('success', $response['message']);
         self::assertArrayHasKey('id', $response);
@@ -64,9 +64,9 @@ class EntryTest extends TestCase
         $id = uniqid('', true);
 
         $response = Entry::build($this->client)
-                         ->email('q_3RYJ4MpggyMFuU50', $id."+test@example.com")
-                         ->response('q_tVabQ3cUlwZTgQ10', 'o_ACvo61cUuKXxD5C1')
-                         ->send();
+                            ->email('q_3RYJ4MpggyMFuU50', $id."+test@example.com")
+                            ->response('q_tVabQ3cUlwZTgQ10', 'o_ACvo61cUuKXxD5C1')
+                            ->send();
 
         self::assertEquals('success', $response['message']);
         self::assertArrayHasKey('id', $response);
@@ -77,12 +77,12 @@ class EntryTest extends TestCase
         $id = uniqid('', true);
 
         $response = Entry::build($this->client)
-             ->uniqueId($id)
-             ->email('q_3RYJ4MpggyMFuU50', $id."+test@example.com")
-             ->name('q_KCyzOs7VqevWbEO0', "Unit", "Tester")
-             ->date('q_1J75WdyBwVpwlJUM', date('Y-m-d'))
-             ->response('q_KCyzOs7VqevWbEO0', ['o_wCcuY5a54YBeXLC1', 'o_ACvo61cUuKXxD5C1'])
-             ->send();
+                ->uniqueId($id)
+                ->email('q_3RYJ4MpggyMFuU50', $id."+test@example.com")
+                ->name('q_KCyzOs7VqevWbEO0', "Unit", "Tester")
+                ->date('q_1J75WdyBwVpwlJUM', date('Y-m-d'))
+                ->response('q_KCyzOs7VqevWbEO0', ['o_wCcuY5a54YBeXLC1', 'o_ACvo61cUuKXxD5C1'])
+                ->send();
 
         self::assertEquals('success', $response['message']);
         self::assertArrayHasKey('id', $response);
@@ -93,9 +93,9 @@ class EntryTest extends TestCase
         $id = uniqid('', true);
 
         $response = Entry::build($this->client)
-             ->uniqueId($id)
-             ->email('q_3RYJ4MpggyMFuU50', $id."+test@example.com")
-             ->send(true);
+                ->uniqueId($id)
+                ->email('q_3RYJ4MpggyMFuU50', $id."+test@example.com")
+                ->send(true);
 
         self::assertEquals('success', $response['message']);
         self::assertArrayHasKey('id', $response);
