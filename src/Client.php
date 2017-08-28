@@ -53,7 +53,7 @@ class Client
             'api_token'     => $this->token,
             'data'          => $data,
         )))->send()->body;
-
+var_dump($body);
         if ($body['status_code'] === 422) {
             throw new RequestException("Validation Exception: " . json_encode($body['errors']));
         }
