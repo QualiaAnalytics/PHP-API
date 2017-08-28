@@ -63,6 +63,19 @@ class Entry
     }
 
     /**
+     * Provide a language for an entry. e.g. 'en', 'es', 'pt'
+     *
+     * @param $language
+     * @return $this
+     */
+    public function language($language)
+    {
+        $this->additional['language'] = $language;
+
+        return $this;
+    }
+
+    /**
      * Append name question
      *
      * @param      $id          Question identifier

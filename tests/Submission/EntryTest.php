@@ -37,7 +37,7 @@ class EntryTest extends TestCase
                 ->send();
     }
 
-    public function allowsOnlyCorrectDate()
+    public function testAllowsOnlyCorrectDate()
     {
         self::setExpectedException("InvalidArgumentException");
 
@@ -70,6 +70,27 @@ class EntryTest extends TestCase
 
         self::assertEquals('success', $response['message']);
         self::assertArrayHasKey('id', $response);
+    }
+
+    public function testSubmitWithLanguage()
+    {
+        $response = Entry::build($this->client)
+                            ->language('en')
+                            ->date('q_1J75WdyBwVpwlJUM', date('Y-m-d'))
+                            ->send();
+
+        self::assertEquals('success', $response['message']);
+        self::assertArrayHasKey('id', $response);
+    }
+
+    public function testSubmitWithInvalidLanguage()
+    {
+        self::setExpectedException("Qualia\Exceptions\RequestException");
+
+        $response = Entry::build($this->client)
+                            ->language('xy')
+                            ->date('q_1J75WdyBwVpwlJUM', date('Y-m-d'))
+                            ->send();
     }
 
     public function testWithAllFields()
