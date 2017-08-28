@@ -47,6 +47,16 @@ $response = \Qualia\Submission\Entry::build($client)
                                   ->send();
 ```
 
+#### Provide a language for entry (recommended, optional)
+If the survey has multiple languages enabled, you may set the language for an entry using below syntax.
+```php
+$response = \Qualia\Submission\Entry::build($client)
+                                  ...
+                                  ->language("en")
+                                  ->send();
+```
+If not provided, system will assign the default survey language. Be aware that if language provided is not in a list of survey languages, you will be thrown an exception.
+
 #### Retrieving question identifiers for surveys
 If you are not sure what fields to provide, please retrieve a full list of questions used in the survey. Note: This will retrieve all questions available and usually you should only provide email, name, maybe a date of visit and other applicable fields that you already collect.
 ```php
