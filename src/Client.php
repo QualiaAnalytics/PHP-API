@@ -5,7 +5,6 @@ use Httpful\Request;
 use Qualia\Exceptions\ConnectionErrorException;
 use Qualia\Exceptions\EmailExistsException;
 use Qualia\Exceptions\RequestException;
-use Qualia\Exceptions\ValidationException;
 
 class Client
 {
@@ -61,10 +60,6 @@ class Client
         } catch (\Httpful\Exception\ConnectionErrorException $e) {
             // rethrow the error.
             throw new ConnectionErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
-        }
-
-        if ($response->code === 422) {
-            throw new ValidationException("Validation Exception: " . json_encode($body['errors']), 422, json_encode($body['errors']));
         }
 
         if (isset($body['status_code']) && $body['status_code'] == 208) {

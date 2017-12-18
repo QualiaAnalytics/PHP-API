@@ -10,6 +10,7 @@ class EmailExistsException extends RequestException
     public function __construct($entryId)
     {
         $this->entryId = $entryId;
+        $this->message = "Entry with such email already exists, entry id: $entryId";
     }
 
     /**
