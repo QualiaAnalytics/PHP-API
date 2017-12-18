@@ -1,6 +1,8 @@
 <?php
 
 use Qualia\Client;
+use Qualia\Exceptions\ConnectionErrorException;
+use Qualia\Exceptions\EmailExistsException;
 use Qualia\Exceptions\RequestException;
 use Qualia\Submission\Entry;
 
@@ -15,6 +17,46 @@ class EntryTest extends TestCase
                         ->email('q_tVabQ3cUlwZTgQ10', 'unit+test@example.com')
                         ->send();
 
+    }
+
+    public function testInvalidSurvey()
+    {
+        self::setExpectedException("\\Qualia\\Exceptions\\RequestException");
+
+        Entry::build(new Client('aaa', 'cT6hCqyxD8MQ0k6gfYwWBt3lIMexpsLQ'))
+                        ->email('q_tVabQ3cUlwZTgQ10', 'unit+test@example.com')
+                        ->send();
+
+    }
+
+    public function testServerError()
+    {
+        try {
+            Entry::build(new Client('aaa', 'cT6hCqyxD8MQ0k6gfYwWBt3lIMexpsLQ', 'api.qualiaanalytics.test'))
+                 ->email('q_tVabQ3cUlwZTgQ10', 'unit+test@example.com')
+                 ->send();
+        } catch (ConnectionErrorException $e) {
+            self::assertTrue(true);
+        } catch (RequestException $e) {
+            self::assertFalse(true);
+        }
+    }
+
+    public function testValidationException()
+    {
+        try {
+            Entry::build($this->client)
+                 ->email('dadad', 'unit+test@example.com')
+                 ->send();
+        } catch (ConnectionErrorException $e) {
+            self::assertTrue(false);
+        } catch (EmailExistsException $e) {
+            self::assertTrue(false);
+        } catch (RequestException $e) {
+            self::assertTrue(true);
+            self::assertEquals(400, $e->getCode());
+            self::assertEquals("Invalid Question: dadad", $e->getMessage());
+        }
     }
 
     public function testFailsWithoutData()
@@ -85,12 +127,39 @@ class EntryTest extends TestCase
 
     public function testSubmitWithInvalidLanguage()
     {
-        self::setExpectedException("Qualia\Exceptions\RequestException");
-
         $response = Entry::build($this->client)
                             ->language('xy')
                             ->date('q_1J75WdyBwVpwlJUM', date('Y-m-d'))
                             ->send();
+
+        // will allow to submit and sets language as default one
+    }
+
+    public function testSubmitDuplicateEmail()
+    {
+        $id = uniqid('', true);
+
+        $response = Entry::build($this->client)
+                            ->email('q_3RYJ4MpggyMFuU50', $id."+test@example.com")
+                            ->send();
+
+        // allowDuplicates will allow to submit
+        $response = Entry::build($this->client)
+                         ->allowDuplicates()
+                         ->email('q_3RYJ4MpggyMFuU50', $id."+test@example.com")
+                         ->send();
+
+        try {
+            // will throw an exception
+            $response = Entry::build($this->client)
+                             ->email('q_3RYJ4MpggyMFuU50', $id."+test@example.com")
+                             ->send();
+        } catch (EmailExistsException $e) {
+            self::assertTrue(strlen($e->getEntryId()) > 0);
+            return;
+        }
+
+        self::assertFalse(true, "Exception was not thrown");
     }
 
     public function testWithAllFields()

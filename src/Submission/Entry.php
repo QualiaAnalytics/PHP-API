@@ -76,6 +76,20 @@ class Entry
     }
 
     /**
+     * By default we will check and only allow submitting entries with unique email address.
+     * You may want to allow duplicate emails in some cases
+     *
+     * @param bool $allow
+     * @return $this
+     */
+    public function allowDuplicates($allow = true)
+    {
+        $this->additional['allow_duplicates'] = $allow ? 1 : 0;
+
+        return $this;
+    }
+
+    /**
      * Append name question
      *
      * @param      $id          Question identifier

@@ -15,8 +15,14 @@ PHP wrapper to interact with Qualia Analytics API
 
 ### Installing
 
+#### Composer
 ```
 composer require qualiaanalytics/php-api
+```
+
+```php
+// Import library from composer
+require __DIR__ . '/vendor/autoload.php';
 ```
 
 ### Usage
@@ -39,7 +45,7 @@ $response = \Qualia\Submission\Entry::build($client)
 Please provide question identifiers for each field. A full list of question identifiers can be retrieved using [this helper method](#retrieving-question-identifiers-for-surveys)
 
 #### Provide an unique identifier (recommended, optional)
-To ensure that you are not sending duplicate entries please provide some sort of identifier for that specific entry if you have. This can be anything: order id, customer id, user id, etc. 
+To ensure that you are not sending duplicate entries please provide some sort of identifier for that specific entry if you have in your system. This can be anything: order id, customer id, user id, etc. 
 ```php
 $response = \Qualia\Submission\Entry::build($client)
                                   ->uniqueId("123")
@@ -48,14 +54,26 @@ $response = \Qualia\Submission\Entry::build($client)
 ```
 
 #### Provide a language for entry (recommended, optional)
-If the survey has multiple languages enabled, you may set the language for an entry using below syntax.
+If the survey has multiple languages enabled, you may set the language for an entry using below syntax depending on your website language.
 ```php
 $response = \Qualia\Submission\Entry::build($client)
                                   ...
                                   ->language("en")
                                   ->send();
 ```
-If not provided, system will assign the default survey language. Be aware that if language provided is not in a list of survey languages, you will be thrown an exception.
+If not provided, system will assign the default survey language. Be aware that if language provided is not in a list of survey languages, a default survey language will be assigned.
+
+
+#### Allow duplicate emails
+By default, we will reject duplicate emails and throw an EmailExistsException.
+However, if you would like to allow duplicate emails to be submitted, you may call allowDuplicates() method. *Please ensure that you are not submitting duplicate emails too often as that will result in sending repeated emails to same email addresses.*
+```php
+$response = \Qualia\Submission\Entry::build($client)
+                                  ->allowDuplicates()
+                                  ...
+                                  ->send();
+```
+
 
 #### Retrieving question identifiers for surveys
 If you are not sure what fields to provide, please retrieve a full list of questions used in the survey. Note: This will retrieve all questions available and usually you should only provide email, name, maybe a date of visit and other applicable fields that you already collect.
@@ -94,18 +112,34 @@ var_dump($questions);
 ```
 
 #### Full example
-This is a full example of general configuration. You will need to replace the fields in CAPITAL letters also the responses.
+This is a full example of general configuration that will work in most cases. You will need to replace the strings in CAPITAL letters.
 ```php
+// Import library from composer
+require __DIR__ . '/vendor/autoload.php';
+
 // Initialize client
 $client = new \Qualia\Client("YOUR_SURVEY_ID", "API_KEY");
 
-// Create entry
-$response = \Qualia\Submission\Entry::build($client)
-                                  ->uniqueId("SOME_ID")
-                                  ->name("QUESTION_ID", "First Name", "Last Name")
-                                  ->email("QUESTION_ID", "email@example.com")
-                                  ->date("QUESTION_ID", "2020-01-02")
-                                  ->response("QUESTION_ID", "RESPONSE")
-                                  ->send()
-
+try {
+    // Create entry
+    $response = \Qualia\Submission\Entry::build($client)
+                                        ->uniqueId("SOME_ID")
+                                        ->name("QUESTION_ID", "First Name", "Last Name")
+                                        ->email("QUESTION_ID", "email@example.com")
+                                        ->date("QUESTION_ID", "2020-01-02")
+                                        ->response("QUESTION_ID", "RESPONSE")
+                                        ->send();
+} catch (\Qualia\Exceptions\ConnectionErrorException $e) {
+    // unable to connect to server
+} catch (\Qualia\Exceptions\EmailExistsException $e) {
+    // echo $e->getEntryId();
+    // The submitted email already exists in the server.
+    // You may or may not need to handle this in your code..
+    // By default, we are preventing duplicate submissions,
+    // if you would like to submit it otherwise, call
+    // allowDuplicates() method when building an entry
+} catch (\Qualia\Exceptions\RequestException $e) {
+    // some other unexpected error
+    // echo $e->getMessage();
+}
 ```

@@ -2,6 +2,8 @@
 
 use Httpful\Mime;
 use Httpful\Request;
+use Qualia\Exceptions\ConnectionErrorException;
+use Qualia\Exceptions\EmailExistsException;
 use Qualia\Exceptions\RequestException;
 
 class Client
@@ -49,17 +51,23 @@ class Client
 
     public function post($url, $data = array(), $additional = array())
     {
-        $body = Request::post("https://" . $this->endpoint . '/' . $url)->body(array_merge($additional, array(
-            'api_token'     => $this->token,
-            'data'          => $data,
-        )))->send()->body;
-
-        if ($body['status_code'] === 422) {
-            throw new RequestException("Validation Exception: " . json_encode($body['errors']));
+        try {
+            $response = Request::post("https://" . $this->endpoint . '/' . $url)->body(array_merge($additional, array(
+                'api_token'     => $this->token,
+                'data'          => $data,
+            )))->send();
+            $body = $response->body;
+        } catch (\Httpful\Exception\ConnectionErrorException $e) {
+            // rethrow the error.
+            throw new ConnectionErrorException($e->getMessage(), $e->getCode(), $e->getPrevious());
         }
 
-        if ($body['status_code'] !== 200) {
-            throw new RequestException($body['message']);
+        if (isset($body['status_code']) && $body['status_code'] == 208) {
+            throw new EmailExistsException($body['id'], $response->code);
+        }
+
+        if ($response->code !== 200) {
+            throw new RequestException($body['message'], $response->code);
         }
 
         return $body;
