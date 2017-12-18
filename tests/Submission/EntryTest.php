@@ -85,7 +85,7 @@ class EntryTest extends TestCase
 
     public function testSubmitWithInvalidLanguage()
     {
-        self::setExpectedException("Qualia\Exceptions\RequestException");
+        self::setExpectedException("Qualia\Exceptions\ValidationException");
 
         $response = Entry::build($this->client)
                             ->language('xy')
