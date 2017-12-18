@@ -112,7 +112,7 @@ var_dump($questions);
 ```
 
 #### Full example
-This is a full example of general configuration. You will need to replace the fields in CAPITAL letters also the responses.
+This is a full example of general configuration that will work in most cases. You will need to replace the strings in CAPITAL letters.
 ```php
 // Import library from composer
 require __DIR__ . '/vendor/autoload.php';
